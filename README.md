@@ -115,21 +115,18 @@ The following example of a fictitious cookbook dependency tree for the typo3.org
 	        ├── typo3lib                # A TYPO3 library cookbook - sets up a TYPO3 directory structure with source links...
 	        └── typo3base               # A base cookbook that sets up the basic system users, packages...
 
-Let us now take a look at the `metadata.rb` and `Berksfile`s of each of the cookbooks:
+Let us now take a look at the `metadata.rb` and `Berksfile` of each of the cookbooks:
 
 **typo3base** and **typo3lib** most likely have no dependencies, so their `metadata.rb` will be empty
 
-````
-name             'site-skeletontypo3org'
-maintainer       'The TYPO3 DevOps Team'
-maintainer_email 'cookbooks@typo3.de'
-license          'All rights reserved'
-# ...
+```` ruby
+name             'typo3lib'
+# 8< ... snip ... 8<
 
 # no `depends` entries
 ````
 
-For **typo3base** and **typo3lib** the `Berksfile` only contains the following lines:
+The `Berksfile` only contains the following lines:
 
 ```` ruby
 source 'https://supermarket.chef.io'
@@ -137,10 +134,96 @@ source 'https://supermarket.chef.io'
 metadata
 ````
 
-indicating that dependencies can be resolved from the `metadata.rb` file.
+indicating that dependencies can be resolved from the `metadata.rb` file (not sure, whether it makes more sense to have no Berksfile at all or whether it may be empty - with this, we are on the safe side!).
+
+**typo3mysql** will have a dependency to **mysql** which we can define in the `metadata.rb`
+
+```` ruby
+name             'typo3mysql'
+# 8< ... snip ... 8<
+
+depends 'mysql', '= 1.2.3'
+````
+
+When including a community cookbook, we agreed upon pinning the patchlevel - as you can never be sure that even a change in the patch level won't break things.
+
+Here is the according `Berksfile`
+
+````ruby
+source 'https://supermarket.chef.io'
+
+metadata
+````
+
+Noting special, since the cookbook can be taken from Chef's community cookbook supermarket and the version is pinned in the `metadata.rb` file.
+
+In the **typo3org** application cookbook, things are slightly different, though. Here's the `metadata.rb`:
+
+````ruby
+name             'typo3org'
+# 8< ... snip ... 8<
+
+depends 'typo3apache', '~> 2.2.1'
+depends 'typo3mysql',  '~> 1.4.3'
+depends 'typo3lib',    '~> 2.1.0'
+depends 'typo3base',   '~> 4.3.2'
+````
+
+When including our "own" cookbooks, we pin only the minor version and enable Chef to use a newer patch level version of the cookbooks.
+
+Here is the according `Berksfile` that's again a little different:
+
+````ruby
+source 'https://supermarket.chef.io'
+
+extension 't3github'
+
+metadata
+
+cookbook 'typo3apache', t3gitlab: 'typo3apache', tag: '2.2.1'
+cookbook 'typo3mysql',  t3gitlab: 'typo3mysql',  tag: '1.4.3'
+cookbook 'typo3lib',    t3gitlab: 'typo3lib',    tag: '2.1.0'
+cookbook 'typo3mysql',  t3gitlab: 'typo3mysql',  tag: '4.3.2'
+````
+
+With the `extension 't3github'` line, we can register a plugin in Berkshelf that allows us to define our own cookbook locations. In this case we take the community cookbooks from our Github organization's repositories and can shorten things a lot by using a custom plugin to resolve the address for us. Since Berkshelf cannot (yet) resolve cookbook versions by Git tags, we need to provide a tag that satisfies the cookbook constraint in the `metadata.rb` which is done with the `tag:` parameter. All the other dependencies can be resolved from the Chef supermarket so they are covered with the `metadata` directive.
+
+Last but not least the **site-typo3org-prod** cookbook's `metadata.rb`
+
+```` ruby
+name             'site-typo3org-prod'
+# 8< ... snip ... 8<
+
+depends 'typo3org', '~> 1.0.1'
+````
+
+since the environment cookbook only covers the "differences" between each of our environments (development, staging, production), this is a very thin "wrapper" around the `typo3org` application cookbook that does most of the work for us. It might come as a surprise, that the `Berksfile` holds some duplication though:
+
+```` ruby
+source 'https://supermarket.chef.io'
+
+extension 't3github'
+
+metadata
+
+cookbook 'typo3org',    t3gitlab: 'typo3org',    tag: '1.0.1'
+cookbook 'typo3apache', t3gitlab: 'typo3apache', tag: '2.2.1'
+cookbook 'typo3mysql',  t3gitlab: 'typo3mysql',  tag: '1.4.3'
+cookbook 'typo3lib',    t3gitlab: 'typo3lib',    tag: '2.1.0'
+cookbook 'typo3mysql',  t3gitlab: 'typo3mysql',  tag: '4.3.2'
+````
+
+Berkshelf does not resolve locations of cookbooks recursively, which means that only the toplevel cookbook can provide a location for a cookbook other than the Chef Supermarket. Hence you need to provide the locations - that are already given in the `typo3org` application cookbook - again in the environment cookbook.
 
 
 
+### Background and Consequences
+
+* We do not use roles in Chef anymore. The reason is that roles in Chef cannot be versioned, hence we cannot have different versions of roles on different stages / servers. Instead, a Chef environment is created for each environment cookbook version that allows us to pin the cookbook versions on the Chef server.
+
+* The environment cookbook itself (e.g. `site-typo3org-prod`) most likely cannot be tested (reasons can be, that hostnames for production won't work or that connected services are productive, hence end-to-end tests are not possible). This "un-testability" requires us to keep those cookbooks as thin as possible, namely: including the default recipe of the underlaying application cookbook and tuning some attributes (e.g. hostnames and credentials of production systems).
+
+* The runlist of a Chef node consists of a single cookbook at the end: the environment cookbook.
 
 
 
