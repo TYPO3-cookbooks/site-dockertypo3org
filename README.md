@@ -5,27 +5,25 @@ This cookbook provides a skeleton for TYPO3 site-cookbooks. The following sectio
 
 ## Cookbook Structure
 
-````
-├── Berksfile                       # Cookbook dependencies for Berkshelf
-├── Gemfile                         # Ruby Gems dependencies for Bundler
-├── README.md                       # The cookbook documentation - automatically generated, DO NOT TOUCH!
-├── attributes                      # Chef's attributes directory
-│   └── ...
-├── doc                             # Directory containing Markdown documents that will automatically be rendered into the README file
-│   └── ...
-├── files                           # Chef's files directory
-│   └── ...
-├── .kitchen.yml                    # Configuration for TestKitchen (integration testing)
-├── metadata.rb                     # The cookbook's metadata file
-├── recipes                         # The cookbook's recipes
-│   ├── _privat_cookbook.rb         # Private recipes start with a '_'
-│   ├── public_cookbook.rb          # Public recipes (reusable recipes, must be well documented)
-│   └── ...
-├── spec                            # Directory for ChefSpec tests (unit tests)
-│   └── ...
-└── templates                       # Chef's template directory
-    └── ...
-````
+	├── Berksfile                       # Cookbook dependencies for Berkshelf
+	├── Gemfile                         # Ruby Gems dependencies for Bundler
+	├── README.md                       # The cookbook documentation - automatically generated, DO NOT TOUCH!
+	├── attributes                      # Chef's attributes directory
+	│   └── ...
+	├── doc                             # Directory containing Markdown documents that will automatically be rendered into the README file
+	│   └── ...
+	├── files                           # Chef's files directory
+	│   └── ...
+	├── .kitchen.yml                    # Configuration for TestKitchen (integration testing)
+	├── metadata.rb                     # The cookbook's metadata file
+	├── recipes                         # The cookbook's recipes
+	│   ├── _privat_cookbook.rb         # Private recipes start with a '_'
+	│   ├── public_cookbook.rb          # Public recipes (reusable recipes, must be well documented)
+	│   └── ...
+	├── spec                            # Directory for ChefSpec tests (unit tests)
+	│   └── ...
+	└── templates                       # Chef's template directory
+	    └── ...
 
 
 
@@ -35,9 +33,7 @@ The `Gemfile` describes the dependencies to Ruby Gems, which we need for some me
 
 To resolve the Gem dependencies that you need to work with the cookbook, run
 
-````
-bundle install
-````
+	bundle install
 
 from the cookbook's root directory. Make sure to have Bundler installed with `gem install bundler`.
 
@@ -69,7 +65,7 @@ We use [Berkshelf](http://berkshelf.com) as a dependency manager for our cookboo
 
 Within the `Berksfile` we can configure the dependencies of our cookbook. Therefore we create a `Berksfile` with the following content in the root directory of our cookbook:
 
-```` ruby
+````ruby
 source 'https://supermarket.chef.io'
 
 metadata
@@ -89,6 +85,62 @@ Generally there are three different sources from where we get our cookbooks:
 As you can see in the given example above, Berkshelf can handle all three of these locations for us.
 
 The `metadata` keyword indicates that the dependencies of the cookbook should automatically be read from our `metadata.rb` file in which we have to declare the dependencies for Chef. Berkshelf will then automatically resolve those dependencies (from the Chef Supermarket unless an different location is given in the `Berksfile`).
+
+
+
+### Cookbook Dependencies and the Environment Pattern
+
+We implement the so-called [Environment Cookbook Pattern](http://blog.vialstudios.com/the-environment-cookbook-pattern/). Within this pattern, you have the following types of cookbooks:
+
+* **Base Cookbooks** doing basic things on your servers, e.g. setting the *message of the day* or creating system users and groups. Most likely there is basic set of packages that you want to install on all of your servers. This stuff belongs here.
+
+* **Library Cookbooks** add basic functionality to your cookbooks, e.g. creating a database or cloning a Git repository to a given location. The goal is to abstract common things into re-usable building blocks.
+
+* **Application Cookbooks** contain at least on recipe to install a piece of software, e.g. an Nginx server or a MySQL database server. Application cookbooks are always named after the application they provide (e.g. `apache` or `mysql`).
+
+* **Wrapper Cookbooks** provide a thin layer for customizing other cookbooks (i.e. community cookbooks). What they do is essentially including recipes from other cookbooks and customizing the attributes of those included cookbooks. A `typo3-apache` cookbook might be a good example.
+
+* **Environment Cookbooks** are the most high-level cookbooks. They are used to manage the release process of cookbooks. It's main goal is to define the exact versions of all the cookbooks that are used in a particular environment (i.e. development, staging, production). It's the only cookbook whose `Berksfile.lock` is checked into version control.
+
+The following example of a fictitious cookbook dependency tree for the typo3.org server makes things clearer:
+
+	└── site-typo3org-prod              # The toplevel environment coobook - provides www.typo3.org in a production environment
+	    └── typo3org                    # An application cookbook - providing a typo3 server (with tunable attributes for the respective environments)
+	        ├── typo3-apache            # TYPO3's wrapper cookbook for Apache - tunes the wrapped Apache community cookbook
+	        │   └── apache              # Application cookbook for Apache - a community cookbook
+	        ├── typo3-mysql             # TYPO3's wrapper cookbook for the MySQL server - tunes the wrapped MySQL community cookbook
+	        │   └── mysql               # Application cookbook for MySQL - a community cookbook
+	        ├── ...                     # Quite a few more of those wrapper / application cookbook pairs (e.g. PHP, Varnish, ...)
+	        │   └── ...
+	        ├── typo3lib                # A TYPO3 library cookbook - sets up a TYPO3 directory structure with source links...
+	        └── typo3base               # A base cookbook that sets up the basic system users, packages...
+
+Let us now take a look at the `metadata.rb` and `Berksfile`s of each of the cookbooks:
+
+**typo3base** and **typo3lib** most likely have no dependencies, so their `metadata.rb` will be empty
+
+````
+name             'site-skeletontypo3org'
+maintainer       'The TYPO3 DevOps Team'
+maintainer_email 'cookbooks@typo3.de'
+license          'All rights reserved'
+# ...
+
+# no `depends` entries
+````
+
+For **typo3base** and **typo3lib** the `Berksfile` only contains the following lines:
+
+```` ruby
+source 'https://supermarket.chef.io'
+
+metadata
+````
+
+indicating that dependencies can be resolved from the `metadata.rb` file.
+
+
+
 
 
 
