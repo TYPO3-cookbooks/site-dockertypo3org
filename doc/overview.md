@@ -63,26 +63,38 @@ We use [Berkshelf](http://berkshelf.com) as a dependency manager for our cookboo
 Within the `Berksfile` we can configure the dependencies of our cookbook. Therefore we create a `Berksfile` with the following content in the root directory of our cookbook:
 
 ````ruby
+source 'http://chef.typo3.org:26200'
+source 'https://supermarket.chef.io'
+
+metadata
+````
+
+The commands `berks install` will download all cookbook dependencies (as specified in `metadata.rb`) from the defined source, which are:
+
+1. The [Chef Supermarket](https://supermarket.chef.io/)
+2. Our [Chef Server](https://chef.typo3.org), accessible through the Berksshelf API Server at `http://chef.typo3.org:26200`.
+
+The `metadata` keyword indicates that the dependencies of the cookbook should automatically be read from our `metadata.rb` file in which we have to declare the dependencies for Chef. Berkshelf will then automatically resolve those dependencies.
+
+*TODO: what about a description of `Berksfile.lock`?*
+
+#### Berksfile During Development
+
+Tha above specified sources require dependent cookbooks to be either available in the Supermarket or in our Chef Server.
+
+While development of cookbooks, it is a frequent pattern that multiple cookbooks evolve together at the same time. To avoid uploading intermediate versions of dependent cookbooks, different sources can be specified in the `Berksfile`:
+
+````ruby
+source 'http://chef.typo3.org:26200'
 source 'https://supermarket.chef.io'
 
 metadata
 
-cookbook 'apache22'
 cookbook 't3-zabbix', github: 'TYPO3-cookbooks/t3-zabbix'
+cookbook 't3-foobar', github: 'TYPO3-cookbooks/t3-zabbix', ref: 'feature/new-feature'
 cookbook 't3-megabook', path: '../cookbooks/t3-megabook'
 ````
-
-
-Generally there are three different sources from where we get our cookbooks:
-
-1. From the [Chef Supermarket](https://supermarket.chef.io/)
-2. From (TYPO3's cookbook repositories on Github)[https://github.com/TYPO3-cookbooks]
-3. From a local directory in our development environment
-
 As you can see in the given example above, Berkshelf can handle all three of these locations for us.
-
-The `metadata` keyword indicates that the dependencies of the cookbook should automatically be read from our `metadata.rb` file in which we have to declare the dependencies for Chef. Berkshelf will then automatically resolve those dependencies (from the Chef Supermarket unless an different location is given in the `Berksfile`).
-
 
 
 ### Cookbook Dependencies and the Environment Pattern
