@@ -3,7 +3,6 @@ This cookbook provides a skeleton for TYPO3 site-cookbooks. The following sectio
 ## Cookbook Structure
 
 	├── Berksfile                       # Cookbook dependencies for Berkshelf
-	├── Gemfile                         # Ruby Gems dependencies for Bundler
 	├── README.md                       # The cookbook documentation - automatically generated, DO NOT TOUCH!
 	├── attributes                      # Chef's attributes directory
 	│   └── ...
@@ -24,32 +23,25 @@ This cookbook provides a skeleton for TYPO3 site-cookbooks. The following sectio
 
 
 
-## Gemfile
 
-The `Gemfile` describes the dependencies to Ruby Gems, which we need for some meta tasks (e.g. rendering the documentation or dependency management for cookbooks).
-
-To resolve the Gem dependencies that you need to work with the cookbook, run
-
-	bundle install
-
-from the cookbook's root directory. Make sure to have Bundler installed with `gem install bundler`.
+# Chef Development Tooling
 
 
+Install [ChefDK](https://downloads.chef.io), which brings already most tools.
 
-### Gem Dependencies
+Further, the follwing RubyGems have to be installed:
 
-Here's a brief description of the dependencies defined in the Gemfile:
-
-* `berkshelf` - the cookbook dependency manager, see [berkshelf.com](http://berkshelf.com)
-* `chefspec` - the unit testing framework for Chef cookbooks, see [ChefSpec's Github page](https://github.com/sethvargo/chefspec)
 * `knife-cookbook-doc` - a plugin for knife that let's you generate the README, see [knife-cookbook-doc's Github page](https://github.com/realityforge/knife-cookbook-doc)
-* `foodcritic` - a linting tool for Chef cookbooks, see [foodcritic.io](http://foodcritic.io/)
-* `serverspec` - an integration testing framework, see [serverspec.org](http://serverspec.org/)
 * `guard` - a file watcher tool, see [Guard's Github page](https://github.com/guard/guard)
 * `thor-scmversion` - a versioning utility handling the cookbook versions, see [thor-scmversion's Github page](https://github.com/RiotGamesMinions/thor-scmversion)
 
-The usage of the tools is described below if necessary.
+We do not use Bundler/Gemfiles, to set those up on a per-repo basis, instead install these Gems into ChefDK's ruby:
 
+	chef gem install knife-coobkook-doc
+	chef gem install guard
+	chef-gem install thor-scmversion
+
+If executables are not available in `$PATH`, use `chef exec <whatever>` instead.
 
 
 ## Berkshelf
