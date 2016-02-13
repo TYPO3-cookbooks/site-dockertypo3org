@@ -1,0 +1,19 @@
+---
+driver:
+  name: vagrant
+
+verifier:
+  name: inspec
+
+provisioner:
+  name: chef_zero
+
+platforms:
+  - name: debian-7.8
+  - name: debian-8.2
+
+suites:
+  - name: default
+    run_list:
+      - recipe[site-skeletontypo3org::default]
+    attributes:
