@@ -1,19 +1,16 @@
-# IDE specific files and directories
-.idea/
-*.iml
+.vagrant
+# Berksfile.lock
+*~
+*#
+.#*
+\#*#
+.*.sw[a-z]
+*.un~
 
-# Chef related files
-.chef/
-.vagrant/
-local-mode-cache/
-nodes/
-knife.rb
-
-# Berkshelf related files
-berks_config.json
-
-# Bundler related files
+# Bundler
 Gemfile.lock
+bin/*
+.bundle/*
 
-# thor-scmversion related files
-VERSION
+.kitchen/
+.kitchen.local.yml

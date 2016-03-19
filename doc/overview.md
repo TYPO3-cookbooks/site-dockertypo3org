@@ -3,7 +3,6 @@ This cookbook provides a skeleton for TYPO3 site-cookbooks. The following sectio
 ## Cookbook Structure
 
 	├── Berksfile                       # Cookbook dependencies for Berkshelf
-	├── Gemfile                         # Ruby Gems dependencies for Bundler
 	├── README.md                       # The cookbook documentation - automatically generated, DO NOT TOUCH!
 	├── attributes                      # Chef's attributes directory
 	│   └── ...
@@ -24,32 +23,25 @@ This cookbook provides a skeleton for TYPO3 site-cookbooks. The following sectio
 
 
 
-## Gemfile
 
-The `Gemfile` describes the dependencies to Ruby Gems, which we need for some meta tasks (e.g. rendering the documentation or dependency management for cookbooks).
-
-To resolve the Gem dependencies that you need to work with the cookbook, run
-
-	bundle install
-
-from the cookbook's root directory. Make sure to have Bundler installed with `gem install bundler`.
+# Chef Development Tooling
 
 
+Install [ChefDK](https://downloads.chef.io), which brings already most tools.
 
-### Gem Dependencies
+Further, the follwing RubyGems have to be installed:
 
-Here's a brief description of the dependencies defined in the Gemfile:
-
-* `berkshelf` - the cookbook dependency manager, see [berkshelf.com](http://berkshelf.com)
-* `chefspec` - the unit testing framework for Chef cookbooks, see [ChefSpec's Github page](https://github.com/sethvargo/chefspec)
 * `knife-cookbook-doc` - a plugin for knife that let's you generate the README, see [knife-cookbook-doc's Github page](https://github.com/realityforge/knife-cookbook-doc)
-* `foodcritic` - a linting tool for Chef cookbooks, see [foodcritic.io](http://foodcritic.io/)
-* `serverspec` - an integration testing framework, see [serverspec.org](http://serverspec.org/)
 * `guard` - a file watcher tool, see [Guard's Github page](https://github.com/guard/guard)
 * `thor-scmversion` - a versioning utility handling the cookbook versions, see [thor-scmversion's Github page](https://github.com/RiotGamesMinions/thor-scmversion)
 
-The usage of the tools is described below if necessary.
+We do not use Bundler/Gemfiles, to set those up on a per-repo basis, instead install these Gems into ChefDK's ruby:
 
+	chef gem install knife-coobkook-doc
+	chef gem install guard
+	chef-gem install thor-scmversion
+
+If executables are not available in `$PATH`, use `chef exec <whatever>` instead.
 
 
 ## Berkshelf
@@ -63,26 +55,38 @@ We use [Berkshelf](http://berkshelf.com) as a dependency manager for our cookboo
 Within the `Berksfile` we can configure the dependencies of our cookbook. Therefore we create a `Berksfile` with the following content in the root directory of our cookbook:
 
 ````ruby
+source 'http://chef.typo3.org:26200'
+source 'https://supermarket.chef.io'
+
+metadata
+````
+
+The commands `berks install` will download all cookbook dependencies (as specified in `metadata.rb`) from the defined source, which are:
+
+1. The [Chef Supermarket](https://supermarket.chef.io/)
+2. Our [Chef Server](https://chef.typo3.org), accessible through the Berksshelf API Server at `http://chef.typo3.org:26200`.
+
+The `metadata` keyword indicates that the dependencies of the cookbook should automatically be read from our `metadata.rb` file in which we have to declare the dependencies for Chef. Berkshelf will then automatically resolve those dependencies.
+
+*TODO: what about a description of `Berksfile.lock`?*
+
+#### Berksfile During Development
+
+Tha above specified sources require dependent cookbooks to be either available in the Supermarket or in our Chef Server.
+
+While development of cookbooks, it is a frequent pattern that multiple cookbooks evolve together at the same time. To avoid uploading intermediate versions of dependent cookbooks, different sources can be specified in the `Berksfile`:
+
+````ruby
+source 'http://chef.typo3.org:26200'
 source 'https://supermarket.chef.io'
 
 metadata
 
-cookbook 'apache22'
 cookbook 't3-zabbix', github: 'TYPO3-cookbooks/t3-zabbix'
+cookbook 't3-foobar', github: 'TYPO3-cookbooks/t3-zabbix', ref: 'feature/new-feature'
 cookbook 't3-megabook', path: '../cookbooks/t3-megabook'
 ````
-
-
-Generally there are three different sources from where we get our cookbooks:
-
-1. From the [Chef Supermarket](https://supermarket.chef.io/)
-2. From (TYPO3's cookbook repositories on Github)[https://github.com/TYPO3-cookbooks]
-3. From a local directory in our development environment
-
 As you can see in the given example above, Berkshelf can handle all three of these locations for us.
-
-The `metadata` keyword indicates that the dependencies of the cookbook should automatically be read from our `metadata.rb` file in which we have to declare the dependencies for Chef. Berkshelf will then automatically resolve those dependencies (from the Chef Supermarket unless an different location is given in the `Berksfile`).
-
 
 
 ### Cookbook Dependencies and the Environment Pattern
