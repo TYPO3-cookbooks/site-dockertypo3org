@@ -409,6 +409,8 @@ driver:
   name: docker
 ```
 
+* `chef gem install kitchen-docker`
+
 * Transparently translates platforms (`debian-8.2`) into docker images.
 * Caveat: Docker images lack some packages (_cron_, _netutils_, ...)
 
@@ -689,3 +691,10 @@ $ cat data_bags/proxy/typo3_org.json
 * `knife ssh virtualization_type:physical hostname`
 
 * `knife ssh '*:*' cssh` launches Cluster-SSH (`brew install csshx` on MacOS)
+
+---
+
+
+# Git Flow?
+
+* It helps me
