@@ -688,7 +688,7 @@ $ cat data_bags/proxy/typo3_org.json
 
 # Misc: `knife ssh`
 
-* `knife ssh virtualization_type:physical hostname`
+* `knife ssh virtualization_role:host hostname`
 
 * `knife ssh '*:*' cssh` launches Cluster-SSH (`brew install csshx` on MacOS)
 
