@@ -1,5 +1,5 @@
 DEPENDENCIES
-  site-skeletontypo3org
+  site-dockertypo3org
     path: .
     metadata: true
 
@@ -91,7 +91,7 @@ GRAPH
   screen (0.7.0)
   seven_zip (2.0.1)
     windows (>= 1.2.2)
-  site-skeletontypo3org (1.0.0)
+  site-dockertypo3org (1.0.0)
     t3-base (~> 0.2.0)
   smf (2.2.8)
     rbac (>= 1.0.1)

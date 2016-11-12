@@ -1,4 +1,4 @@
-This cookbook provides a skeleton for TYPO3 site-cookbooks. The following sections describe the usage of the skeleton.
+This cookbook provides a docker for TYPO3 site-cookbooks. The following sections describe the usage of the skeleton.
 
 ## Cookbook Structure
 

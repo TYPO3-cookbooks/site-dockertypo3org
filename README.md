@@ -1,6 +1,6 @@
 # Description
 
-This cookbook provides a skeleton for TYPO3 site-cookbooks. The following sections describe the usage of the skeleton.
+This cookbook provides a docker for TYPO3 site-cookbooks. The following sections describe the usage of the skeleton.
 
 ## Cookbook Structure
 
@@ -293,29 +293,29 @@ TODO
 
 # Attributes
 
-* `node['skeleton']['sample_attribute']` - Sample attribute for showing how documentation of attributes works. Defaults to `[ ... ]`.
+* `node['docker']['sample_attribute']` - Sample attribute for showing how documentation of attributes works. Defaults to `[ ... ]`.
 * `node['email_adress']` - email address for the TYPO3 cookbook maintainers. Defaults to `cookbooks@typo3.org`.
 
 # Recipes
 
-* [site-skeletontypo3org::default](#site-skeletontypo3orgdefault)
-* [site-skeletontypo3org::sample](#site-skeletontypo3orgsample) - Provides a sample recipe for the TYPO3 skeleton cookbook.
+* [site-dockertypo3org::default](#site-skeletontypo3orgdefault)
+* [site-dockertypo3org::sample](#site-skeletontypo3orgsample) - Provides a sample recipe for the TYPO3 skeleton cookbook.
 
-## site-skeletontypo3org::default
+## site-dockertypo3org::default
 
 The default recipe
 
-## site-skeletontypo3org::sample
+## site-dockertypo3org::sample
 
-Provides a sample recipe for the TYPO3 skeleton cookbook.
+Provides a sample recipe for the TYPO3 docker cookbook.
 
 Build Status
 ------------
 
 Build status on our [CI server](https://chef-ci.typo3.org):
 
-- *master* (release): [![Build Status master branch](https://chef-ci.typo3.org/job/TYPO3-cookbooks/job/site-skeletontypo3org/branch/master/badge/icon)](https://chef-ci.typo3.org/job/TYPO3-cookbooks/job/site-skeletontypo3org/branch/master/)
-- *develop* (next release): [![Build Status develop branch](https://chef-ci.typo3.org/job/TYPO3-cookbooks/job/site-skeletontypo3org/branch/develop/badge/icon)](https://chef-ci.typo3.org/job/TYPO3-cookbooks/job/site-skeletontypo3org/branch/develop/)
+- *master* (release): [![Build Status master branch](https://chef-ci.typo3.org/job/TYPO3-cookbooks/job/site-dockertypo3org/branch/master/badge/icon)](https://chef-ci.typo3.org/job/TYPO3-cookbooks/job/site-skeletontypo3org/branch/master/)
+- *develop* (next release): [![Build Status develop branch](https://chef-ci.typo3.org/job/TYPO3-cookbooks/job/site-dockertypo3org/branch/develop/badge/icon)](https://chef-ci.typo3.org/job/TYPO3-cookbooks/job/site-skeletontypo3org/branch/develop/)
 
 
 

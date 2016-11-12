@@ -1,8 +1,8 @@
-name             "site-skeletontypo3org"
+name             "site-dockertypo3org"
 maintainer       "TYPO3 Server Admin Team"
 maintainer_email "cookbooks@typo3.org"
 license          "Apache 2.0"
-description      "Skeleton Cookbook for TYPO3 Site Cookbooks"
+description      "Wrapper cookbook for Docker"
 long_description IO.read(File.join(File.dirname(__FILE__), "README.md"))
 version          "1.0.0"
 

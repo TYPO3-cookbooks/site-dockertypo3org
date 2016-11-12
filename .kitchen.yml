@@ -15,5 +15,5 @@ platforms:
 suites:
   - name: default
     run_list:
-      - recipe[site-skeletontypo3org::default]
+      - recipe[site-dockertypo3org::default]
     attributes:
