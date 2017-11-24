@@ -46,7 +46,6 @@ systemd_service 'docker' do
     start_limit_burst 3
     start_limit_interval '60s'
   end
-  only_if { ::File.open('/proc/1/comm').gets.chomp == 'systemd' } # systemd
 end
 
 # Service
@@ -61,7 +60,7 @@ end
 
 # API TLS Key
 openssl_x509 '/etc/docker/tls.crt' do
-  common_name "#{node['hostname']}"
+  common_name node['hostname']
   org 'TYPO3 Association'
   org_unit 'Server Team'
   country 'CH'
