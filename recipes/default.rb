@@ -60,9 +60,13 @@ directory "/etc/docker" do
 end
 
 # API TLS Key
-execute 'generate API tls key' do
-  command "openssl req -new -newkey rsa:4096 -days 3650 -nodes -x509 -subj \"/C=CH/O=TYPO3 Association/CN=#{node['hostname']}\" -keyout /etc/docker/tls.key  -out /etc/docker/tls.crt"
-  not_if 'test -f /etc/docker/tls.key && test -f /etc/docker/tls.crt'
+openssl_x509 '/etc/docker/tls.crt' do
+  common_name "#{node['hostname']}"
+  org 'TYPO3 Association'
+  org_unit 'Server Team'
+  country 'CH'
+  key_length 4096
+  expire 3650
   notifies :restart, resources(:service => "docker")
 end
 
