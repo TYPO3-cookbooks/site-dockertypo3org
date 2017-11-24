@@ -17,4 +17,5 @@ depends          "t3-base",     "~> 0.2.0"
 
 # community cookbooks, pin to patchlevel (= 1.1.1)
 # depends          "haproxy",    "= 1.6.7"
-# depends          "openssl",    "= 4.4.0"
+depends          "openssl",    "= 4.4.0"
+depends          "systemd",    "= 2.1.3"
