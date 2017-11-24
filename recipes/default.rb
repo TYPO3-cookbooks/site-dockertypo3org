@@ -22,3 +22,26 @@ end
 # Package
 package 'docker-engine'
 
+# Service configuration
+template '/lib/systemd/system/docker.service' do
+  source "docker.service"
+  mode 0644
+end
+
+# Service
+service "docker"
+
+# Configuration
+directory "/etc/docker" do
+  owner 'root'
+  group 'root'
+  mode 0700
+end
+
+# API TLS Key
+execute 'generate API tls key' do
+  command "openssl req -new -newkey rsa:4096 -days 3650 -nodes -x509 -subj \"/C=CH/O=TYPO3 Association/CN=#{node['hostname']}\" -keyout /etc/docker/tls.key  -out /etc/docker/tls.crt"
+  not_if 'test -f /etc/docker/tls.key && test -f /etc/docker/tls.crt'
+  notifies :restart, resources(:service => "docker")
+end
+
