@@ -72,4 +72,4 @@ end
 ##########################
 # docker-compose
 ##########################
-include_recipe 'docker_compose'
+include_recipe 'site-dockertypo3org::docker_compose'
