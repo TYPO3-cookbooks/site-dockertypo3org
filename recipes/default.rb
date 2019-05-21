@@ -69,3 +69,7 @@ openssl_x509 '/etc/docker/tls.crt' do
   notifies :restart, resources(:service => "docker")
 end
 
+##########################
+# docker-compose
+##########################
+include_recipe 'docker_compose'
