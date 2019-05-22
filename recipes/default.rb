@@ -67,6 +67,9 @@ openssl_x509 '/etc/docker/tls.crt' do
   key_length 4096
   expire 3650
   notifies :restart, resources(:service => "docker")
+  # Don't restart the Docker service when running inside kitchen-dokken
+  # This would otherwise break tests!
+  only_if { node['hostname'] != 'dokken' }
 end
 
 ##########################
