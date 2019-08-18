@@ -10,13 +10,29 @@ include_recipe "t3-base"
 
 # include_recipe "#{cookbook_name}::_logrotate"
 
+directory '/root/.gnupg' do
+  mode 0700
+end
+
+file '/root/.gnupg/dirmngr.conf' do
+  content 'disable-ipv6'
+end
+
+bash "import apt repository key" do
+  code <<-EOF
+  gpg --no-tty --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+  gpg --export --armor 58118E89F3A912897C070ADBF76221572C52609D | apt-key add -
+  EOF
+  not_if "apt-key adv --list-public-keys --with-fingerprint --with-colons | grep -q \"58118E89F3A912897C070ADBF76221572C52609D\""
+end
+
 # Repository
 apt_repository 'docker' do
   uri          'https://apt.dockerproject.org/repo'
   distribution "#{node['platform']}-#{node['lsb']['codename']}"
   components   ['main']
-  keyserver    'p80.pool.sks-keyservers.net'
-  key          '58118E89F3A912897C070ADBF76221572C52609D'
+  #keyserver    'p80.pool.sks-keyservers.net'
+  #key          '58118E89F3A912897C070ADBF76221572C52609D'
 end
 
 # Package
