@@ -20,23 +20,19 @@ end
 
 bash "import apt repository key" do
   code <<-EOF
-  gpg --no-tty --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
-  gpg --export --armor 58118E89F3A912897C070ADBF76221572C52609D | apt-key add -
+  curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add -
   EOF
-  not_if "apt-key adv --list-public-keys --with-fingerprint --with-colons | grep -q \"58118E89F3A912897C070ADBF76221572C52609D\""
+  not_if "apt-key adv --list-public-keys --with-fingerprint --with-colons | grep -q \"9DC858229FC7DD38854AE2D88D81803C0EBFCD88\""
 end
 
-# Repository
 apt_repository 'docker' do
-  uri          'https://apt.dockerproject.org/repo'
-  distribution "#{node['platform']}-#{node['lsb']['codename']}"
-  components   ['main']
-  #keyserver    'p80.pool.sks-keyservers.net'
-  #key          '58118E89F3A912897C070ADBF76221572C52609D'
+  uri          'https://download.docker.com/linux/debian'
+  distribution node['lsb']['codename']
+  components   ['stable']
 end
 
 # Package
-package 'docker-engine'
+package 'docker-ce'
 
 # Service configuration
 systemd_service 'docker' do
