@@ -5,7 +5,7 @@ control 'docker' do
   '
 
   # Package
-  describe package('docker-engine') do
+  describe package('docker-ce') do
     it { should be_installed }
   end
 
@@ -25,13 +25,13 @@ control 'docker' do
   end
   
   # Docker API listen
-  describe port(2376) do
-    it { should be_listening }
-  end
+  #describe port(2376) do
+  #  it { should be_listening }
+  #end
 
   # Docker API ping
-  describe command("curl --cacert /etc/docker/tls.crt --cert /etc/docker/tls.crt --key /etc/docker/tls.key https://$(hostname):2376/_ping") do
-    its('exit_status') { should eq 0 }
-    its('stdout') { should match /^OK$/ }
-  end
+  #describe command("curl --cacert /etc/docker/tls.crt --cert /etc/docker/tls.crt --key /etc/docker/tls.key https://$(hostname):2376/_ping") do
+  #  its('exit_status') { should eq 0 }
+  #  its('stdout') { should match /^OK$/ }
+  #end
 end
